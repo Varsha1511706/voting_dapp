@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockVote | Decentralized Voting Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a237e;
+            --secondary: #303f9f;
+            --accent: #e53935;
+            --light: #f5f7ff;
+            --dark: #0d1440;
+            --success: #43a047;
+            --warning: #ffb300;
+            --danger: #e53935;
+            --info: #0288d1;
+            --gradient: linear-gradient(135deg, #1a237e, #303f9f);
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --admin-gradient: linear-gradient(135deg, #4a148c, #7b1fa2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8faff;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: var(--gradient);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo i {
+            font-size: 2rem;
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px;
+            border-radius: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        
+        .logo span {
+            color: #ffcc80;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        nav a:hover, nav a.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .connect-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .connect-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffcc80, #ff9800);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark);
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Main Content Styles */
+        main {
+            padding: 2rem 0;
+            min-height: calc(100vh - 140px);
+        }
+        
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page-header {
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+        
+        .page-header h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .page-header h2:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+        
+        .page-header p {
+            color: #666;
+            max-width: 700px;
+            margin: 1.5rem auto 0;
+            font-size: 1.1rem;
+        }
+        
+        /* Home/Team Page Styles */
+        .hero-section {
+            background: var(--gradient);
+            color: white;
+            padding: 4rem 0;
+            border-radius: 12px;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        
+        .hero-section h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-section p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        
+        .team-section {
+            margin: 4rem 0;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .team-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .team-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .team-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+            color: white;
+            border: 4px solid white;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .team-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .team-card .role {
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .team-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            transition: all 0.3s;
+        }
+        
+        .social-links a:hover {
+            background: var(--gradient);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        /* Voting Page Styles */
+        .voting-container {
+            max-width: 850px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .voting-header {
+            padding: 1.8rem;
+            background: var(--gradient);
+            color: white;
+        }
+        
+        .voting-header h3 {
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .voting-body {
+            padding: 2rem;
+        }
+        
+        .candidates-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .candidate-item {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .candidate-item:hover {
+            border-color: var(--secondary);
+            background-color: rgba(41, 98, 255, 0.03);
+        }
+        
+        .candidate-item.selected {
+            border-color: var(--secondary);
+            background-color: rgba(41, 98, 255, 0.08);
+            box-shadow: 0 4px 12px rgba(41, 98, 255, 0.1);
+        }
+        
+        .candidate-item.selected:after {
+            content: '✓';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 30px;
+            height: 30px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .candidate-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.5rem;
+            font-weight: bold;
+            color: white;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+        
+        .candidate-info {
+            flex: 1;
+        }
+        
+        .candidate-info h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .candidate-info .department {
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .candidate-info p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .vote-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Authentication Page Styles */
+        .auth-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .auth-header {
+            padding: 1.8rem;
+            background: var(--gradient);
+            color: white;
+            text-align: center;
+        }
+        
+        .auth-header h3 {
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .auth-body {
+            padding: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.7rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(41, 98, 255, 0.1);
+            outline: none;
+        }
+        
+        .auth-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        /* Contact Page Styles */
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .contact-info {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .contact-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+        
+        .contact-detail {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .contact-detail i {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+        
+        .contact-form {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .contact-form h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Admin Panel Styles */
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .admin-header {
+            background: var(--admin-gradient);
+            color: white;
+            padding: 1.8rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .admin-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .admin-tab {
+            padding: 1rem 1.5rem;
+            background: white;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .admin-tab.active {
+            background: var(--admin-gradient);
+            color: white;
+        }
+        
+        .admin-tab:hover:not(.active) {
+            background: #f0f0f0;
+        }
+        
+        .admin-content {
+            display: none;
+        }
+        
+        .admin-content.active {
+            display: block;
+        }
+        
+        .admin-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .admin-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .candidate-management {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .candidate-input {
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+        }
+        
+        .candidate-input .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        .candidate-list {
+            margin-top: 1.5rem;
+        }
+        
+        .candidate-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+        }
+        
+        .candidate-list-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .voter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .voter-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .voter-item:hover {
+            background: #f9f9f9;
+        }
+        
+        .voter-info h4 {
+            margin-bottom: 0.3rem;
+            color: var(--primary);
+        }
+        
+        .voter-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .election-status {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background-color: rgba(67, 160, 71, 0.15);
+            color: var(--success);
+        }
+        
+        .status-upcoming {
+            background-color: rgba(255, 179, 0, 0.15);
+            color: var(--warning);
+        }
+        
+        .status-completed {
+            background-color: rgba(158, 158, 158, 0.15);
+            color: #757575;
+        }
+        
+        .btn {
+            padding: 0.7rem 1.4rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(41, 98, 255, 0.3);
+        }
+        
+        .btn-admin {
+            background: var(--admin-gradient);
+            color: white;
+        }
+        
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(106, 27, 154, 0.3);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(229, 57, 53, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: var(--light);
+            color: var(--primary);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e8edff;
+            transform: translateY(-2px);
+        }
+        
+        .btn-block {
+            width: 100%;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Footer Styles */
+        footer {
+            background: var(--gradient);
+            color: white;
+            padding: 2.5rem 0;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-logo i {
+            font-size: 2.2rem;
+        }
+        
+        .footer-logo h2 {
+            font-size: 1.8rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .footer-links a:hover {
+            color: #ffcc80;
+            transform: translateY(-2px);
+        }
+        
+        .copyright {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            margin-top: 1rem;
+        }
+        
+        /* Blockchain Status */
+        .blockchain-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-left: 1rem;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.error {
+            background: var(--danger);
+        }
+        
+        .toast.warning {
+            background: var(--warning);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1.2rem;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero-section h1 {
+                font-size: 2.5rem;
+            }
+            
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .blockchain-status {
+                margin-left: 0;
+                margin-top: 0.5rem;
+            }
+            
+            .admin-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .candidate-input {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-vote-yea"></i>
+                    <h1>Block<span>Vote</span></h1>
+                </div>
+                
+                <nav>
+                    <ul>
+                        <li><a href="#" class="nav-link active" data-page="home"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="#" class="nav-link" data-page="voting"><i class="fas fa-vote-yea"></i> Vote</a></li>
+                        <li><a href="#" class="nav-link" data-page="auth"><i class="fas fa-user-shield"></i> Authentication</a></li>
+                        <li><a href="#" class="nav-link" data-page="admin"><i class="fas fa-user-cog"></i> Admin Panel</a></li>
+                        <li><a href="#" class="nav-link" data-page="contact"><i class="fas fa-envelope"></i> Contact</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="user-actions">
+                    <div class="blockchain-status">
+                        <div class="status-indicator"></div>
+                        <span>Blockchain Connected</span>
+                    </div>
+                    <button class="connect-btn" id="connectWallet">
+                        <i class="fas fa-wallet"></i> Connect Wallet
+                    </button>
+                    <div class="user-avatar" id="userAvatar">DV</div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container">
+            <!-- Home/Team Page -->
+            <section id="home" class="page active">
+                <div class="hero-section">
+                    <h1>Decentralized Voting System</h1>
+                    <p>A secure, transparent, and tamper-proof voting platform built on blockchain technology for educational institutions.</p>
+                    <a href="#" class="btn btn-primary" data-page="voting"><i class="fas fa-vote-yea"></i> Start Voting</a>
+                </div>
+                
+                <div class="team-section">
+                    <div class="page-header">
+                        <h2>Our Team</h2>
+                        <p>Final Year Artificial Intellegenceand Data Science Engineering Students</p>
+                    </div>
+                    
+                    <div class="team-grid">
+                        <div class="team-card">
+                            <div class="team-avatar">DK</div>
+                            <h3>Dhivya Kirthi V K</h3>
+                            <p class="role">Blockchain Developer</p>
+                            <p>Final year AI&DS student specializing in blockchain technology and smart contract development.</p>
+                            <div class="social-links">
+                                <a href="#"><i class="fab fa-linkedin"></i></a>
+                                <a href="#"><i class="fab fa-github"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                            </div>
+                        </div>
+                        
+                        <div class="team-card">
+                            <div class="team-avatar">JV</div>
+                            <h3>Jaya Varsha R</h3>
+                            <p class="role">Backend Developer</p>
+                            <p>Final year AI&DS student with expertise in backend systems and database management.</p>
+                            <div class="social-links">
+                                <a href="#"><i class="fab fa-linkedin"></i></a>
+                                <a href="#"><i class="fab fa-github"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                            </div>
+                        </div>
+                        
+                        <div class="team-card">
+                            <div class="team-avatar">PT</div>
+                            <h3>Pethal T</h3>
+                            <p class="role">Data Analyst</p>
+                            <p>Final year AI&DS student passionate about creating intuitive and beautiful user interfaces.</p>
+                            <div class="social-links">
+                                <a href="#"><i class="fab fa-linkedin"></i></a>
+                                <a href="#"><i class="fab fa-github"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                            </div>
+                        </div>
+                        
+                        <div class="team-card">
+                            <div class="team-avatar">SH</div>
+                            <h3>S R Harini</h3>
+                            <p class="role">Frontend Developer</p>
+                            <p>Final year AI&DS student with strong organizational skills and project coordination abilities.</p>
+                            <div class="social-links">
+                                <a href="#"><i class="fab fa-linkedin"></i></a>
+                                <a href="#"><i class="fab fa-github"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Voting Page -->
+            <section id="voting" class="page">
+                <div class="page-header">
+                    <h2>Cast Your Vote</h2>
+                    <p>Select your preferred candidate and submit your vote securely to the blockchain.</p>
+                </div>
+                
+                <div class="voting-container">
+                    <div class="voting-header">
+                        <h3>Student Council Election 2025</h3>
+                        <p>Vote for your preferred candidate. Your vote is encrypted and recorded on the blockchain.</p>
+                    </div>
+                    
+                    <div class="voting-body">
+                        <div class="candidates-list">
+                            <div class="candidate-item" data-candidate="1">
+                                <div class="candidate-avatar">AK</div>
+                                <div class="candidate-info">
+                                    <h4>Arun Kumar</h4>
+                                    <p class="department">Computer Science Department</p>
+                                    <p>Focus on improving campus facilities and student events. Promises to establish more student clubs and organize cultural festivals.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="candidate-item" data-candidate="2">
+                                <div class="candidate-avatar">PM</div>
+                                <div class="candidate-info">
+                                    <h4>Priya Menon</h4>
+                                    <p class="department">Electrical Engineering Department</p>
+                                    <p>Advocate for better research opportunities and industry partnerships. Plans to establish mentorship programs with alumni.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="candidate-item" data-candidate="3">
+                                <div class="candidate-avatar">RS</div>
+                                <div class="candidate-info">
+                                    <h4>Rahul Sharma</h4>
+                                    <p class="department">Mechanical Engineering Department</p>
+                                    <p>Prioritize student welfare and academic support systems. Focus on improving hostel facilities and library resources.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="vote-actions">
+                            <button class="btn btn-secondary" id="clearSelection"><i class="fas fa-times"></i> Clear Selection</button>
+                            <button class="btn btn-primary" id="submitVote"><i class="fas fa-paper-plane"></i> Submit Vote</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Authentication Page -->
+            <section id="auth" class="page">
+                <div class="page-header">
+                    <h2>Voter Authentication</h2>
+                    <p>Verify your identity to participate in the voting process.</p>
+                </div>
+                
+                <div class="auth-container">
+                    <div class="auth-header">
+                        <h3>Student Verification</h3>
+                        <p>Please provide your details to verify eligibility</p>
+                    </div>
+                    
+                    <div class="auth-body">
+                        <div class="form-group">
+                            <label for="studentId">Student ID</label>
+                            <input type="text" id="studentId" placeholder="Enter your student ID">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" placeholder="Enter your full name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="department">Department</label>
+                            <select id="department">
+                                <option value="">Select your department</option>
+                                <option value="cse">Computer Science & Engineering</option>
+                                <option value="ece">Electronics & Communication</option>
+                                <option value="mech">Mechanical Engineering</option>
+                                <option value="civil">Civil Engineering</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="year">Academic Year</label>
+                            <select id="year">
+                                <option value="">Select your year</option>
+                                <option value="1">First Year</option>
+                                <option value="2">Second Year</option>
+                                <option value="3">Third Year</option>
+                                <option value="4">Final Year</option>
+                            </select>
+                        </div>
+                        
+                        <div class="auth-actions">
+                            <button class="btn btn-primary btn-block" id="verifyStudent"><i class="fas fa-user-check"></i> Verify & Proceed</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Admin Panel -->
+            <section id="admin" class="page">
+                <div class="admin-header">
+                    <h2><i class="fas fa-user-cog"></i> Admin Panel</h2>
+                    <p>Manage elections, voters, and view results</p>
+                </div>
+                
+                <div class="admin-tabs">
+                    <button class="admin-tab active" data-tab="elections"><i class="fas fa-vote-yea"></i> Manage Elections</button>
+                    <button class="admin-tab" data-tab="voters"><i class="fas fa-users"></i> Voter Management</button>
+                    <button class="admin-tab" data-tab="results"><i class="fas fa-chart-bar"></i> Election Results</button>
+                </div>
+                
+                <!-- Elections Management Tab -->
+                <div class="admin-content active" id="elections-tab">
+                    <div class="admin-card">
+                        <h3><i class="fas fa-plus-circle"></i> Create New Election</h3>
+                        <div class="form-group">
+                            <label for="electionTitle">Election Title</label>
+                            <input type="text" id="electionTitle" placeholder="Enter election title">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="startDate">Start Date & Time</label>
+                                <input type="datetime-local" id="startDate">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="endDate">End Date & Time</label>
+                                <input type="datetime-local" id="endDate">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="electionDescription">Election Description</label>
+                            <textarea id="electionDescription" rows="3" placeholder="Describe the purpose of this election"></textarea>
+                        </div>
+                        
+                        <h4 style="margin-top: 2rem; margin-bottom: 1rem;"><i class="fas fa-user-friends"></i> Add Candidates</h4>
+                        
+                        <div class="candidate-management">
+                            <div class="candidate-input">
+                                <div class="form-group">
+                                    <label for="candidateName">Candidate Name</label>
+                                    <input type="text" id="candidateName" placeholder="Enter candidate name">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="candidateDepartment">Department</label>
+                                    <input type="text" id="candidateDepartment" placeholder="Enter candidate department">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="candidateDescription">Description</label>
+                                    <input type="text" id="candidateDescription" placeholder="Brief description">
+                                </div>
+                                
+                                <button class="btn btn-admin btn-sm" id="addCandidate" style="height: fit-content;"><i class="fas fa-plus"></i> Add</button>
+                            </div>
+                            
+                            <div class="candidate-list" id="candidateList">
+                                <!-- Candidates will be added here dynamically -->
+                                <div class="candidate-list-item">
+                                    <div>
+                                        <h4>Arun Kumar</h4>
+                                        <p>Computer Science Department</p>
+                                    </div>
+                                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="auth-actions" style="margin-top: 2rem;">
+                            <button class="btn btn-admin btn-block" id="createElection"><i class="fas fa-rocket"></i> Launch Election</button>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-card">
+                        <h3><i class="fas fa-list-alt"></i> Active Elections</h3>
+                        <div class="election-list">
+                            <div class="voter-item">
+                                <div class="voter-info">
+                                    <h4>Student Council Election 2025</h4>
+                                    <p>Started: 15 Aug 2025 | Ends: 25 Aug 2025</p>
+                                </div>
+                                <div>
+                                    <span class="election-status status-active">Active</span>
+                                    <button class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> View</button>
+                                    <button class="btn btn-danger btn-sm"><i class="fas fa-stop"></i> End</button>
+                                </div>
+                            </div>
+                            
+                            <div class="voter-item">
+                                <div class="voter-info">
+                                    <h4>Department Head Election</h4>
+                                    <p>Starts: 01 Sep 2025 | Ends: 10 Sep 2025</p>
+                                </div>
+                                <div>
+                                    <span class="election-status status-upcoming">Upcoming</span>
+                                    <button class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i> View</button>
+                                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Voter Management Tab -->
+                <div class="admin-content" id="voters-tab">
+                    <div class="admin-card">
+                        <h3><i class="fas fa-user-plus"></i> Add Voters</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="voterStudentId">Student ID</label>
+                                <input type="text" id="voterStudentId" placeholder="Enter student ID">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="voterName">Full Name</label>
+                                <input type="text" id="voterName" placeholder="Enter full name">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="voterDepartment">Department</label>
+                                <select id="voterDepartment">
+                                    <option value="">Select department</option>
+                                    <option value="cse">Computer Science & Engineering</option>
+                                    <option value="ece">Electronics & Communication</option>
+                                    <option value="mech">Mechanical Engineering</option>
+                                    <option value="civil">Civil Engineering</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="voterYear">Academic Year</label>
+                                <select id="voterYear">
+                                    <option value="">Select year</option>
+                                    <option value="1">First Year</option>
+                                    <option value="2">Second Year</option>
+                                    <option value="3">Third Year</option>
+                                    <option value="4">Final Year</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-admin btn-block" id="addVoter"><i class="fas fa-user-plus"></i> Add Voter</button>
+                    </div>
+                    
+                    <div class="admin-card">
+                        <h3><i class="fas fa-users"></i> Registered Voters</h3>
+                        <div class="voter-list">
+                            <div class="voter-item">
+                                <div class="voter-info">
+                                    <h4>Dhivya Kirthi V K</h4>
+                                    <p>ID: 22UEA003 | CSE | Final Year</p>
+                                </div>
+                                <div>
+                                    <span class="election-status status-active">Eligible</span>
+                                    <button class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Edit</button>
+                                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Remove</button>
+                                </div>
+                            </div>
+                            
+                            <div class="voter-item">
+                                <div class="voter-info">
+                                    <h4>Jaya Varsha R</h4>
+                                    <p>ID: 22UEA007 | CSE | Final Year</p>
+                                </div>
+                                <div>
+                                    <span class="election-status status-active">Eligible</span>
+                                    <button class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Edit</button>
+                                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Remove</button>
+                                </div>
+                            </div>
+                            
+                            <div class="voter-item">
+                                <div class="voter-info">
+                                    <h4>Pethal T</h4>
+                                    <p>ID: 22UEA018 | CSE | Final Year</p>
+                                </div>
+                                <div>
+                                    <span class="election-status status-active">Eligible</span>
+                                    <button class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Edit</button>
+                                    <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results Tab -->
+                <div class="admin-content" id="results-tab">
+                    <div class="admin-card">
+                        <h3><i class="fas fa-chart-pie"></i> Election Results</h3>
+                        <div class="form-group">
+                            <label for="resultElection">Select Election</label>
+                            <select id="resultElection">
+                                <option value="1">Student Council Election 2025</option>
+                                <option value="2">Department Head Election</option>
+                                <option value="3">University Senate Election</option>
+                            </select>
+                        </div>
+                        
+                        <div class="results-container">
+                            <div class="result-item">
+                                <div class="result-rank">1</div>
+                                <div class="result-info">
+                                    <h4>Arun Kumar</h4>
+                                    <div class="result-bar">
+                                        <div class="result-fill" style="width: 45%"></div>
+                                    </div>
+                                    <div class="result-stats">
+                                        <span>45%</span>
+                                        <span>154 votes</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="result-item">
+                                <div class="result-rank">2</div>
+                                <div class="result-info">
+                                    <h4>Priya Menon</h4>
+                                    <div class="result-bar">
+                                        <div class="result-fill" style="width: 35%"></div>
+                                    </div>
+                                    <div class="result-stats">
+                                        <span>35%</span>
+                                        <span>120 votes</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="result-item">
+                                <div class="result-rank">3</div>
+                                <div class="result-info">
+                                    <h4>Rahul Sharma</h4>
+                                    <div class="result-bar">
+                                        <div class="result-fill" style="width: 20%"></div>
+                                    </div>
+                                    <div class="result-stats">
+                                        <span>20%</span>
+                                        <span>68 votes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-grid" style="margin-top: 2rem;">
+                            <div class="stat-card">
+                                <div class="stat-icon blue">
+                                    <i class="fas fa-vote-yea"></i>
+                                </div>
+                                <h3>342</h3>
+                                <p>Total Votes</p>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon green">
+                                    <i class="fas fa-user-check"></i>
+                                </div>
+                                <h3>65%</h3>
+                                <p>Voter Turnout</p>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon orange">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <h3>2 days</h3>
+                                <p>Remaining Time</p>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon red">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <h3>0</h3>
+                                <p>Disputed Votes</p>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-admin btn-block" style="margin-top: 2rem;"><i class="fas fa-download"></i> Export Results</button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Contact Page -->
+            <section id="contact" class="page">
+                <div class="page-header">
+                    <h2>Contact & Feedback</h2>
+                    <p>We'd love to hear from you. Send us your feedback or questions.</p>
+                </div>
+                
+                <div class="contact-container">
+                    <div class="contact-info">
+                        <h3><i class="fas fa-info-circle"></i> Contact Information</h3>
+                        <div class="contact-details">
+                            <div class="contact-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>
+                                    <h4>Address</h4>
+                                    <p>School of Engineering<br>Computer Science Department</p>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-detail">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <h4>Email</h4>
+                                    <p>blockvote@university.edu</p>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-detail">
+                                <i class="fas fa-phone"></i>
+                                <div>
+                                    <h4>Phone</h4>
+                                    <p>+91 98765 43210</p>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-detail">
+                                <i class="fas fa-clock"></i>
+                                <div>
+                                    <h4>Response Time</h4>
+                                    <p>Within 24 hours</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-form">
+                        <h3><i class="fas fa-comment-dots"></i> Send Feedback</h3>
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" placeholder="Enter your name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contactEmail">Email Address</label>
+                            <input type="email" id="contactEmail" placeholder="Enter your email">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" placeholder="Enter subject">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" rows="5" placeholder="Enter your message"></textarea>
+                        </div>
+                        
+                        <button class="btn btn-primary btn-block" id="sendFeedback"><i class="fas fa-paper-plane"></i> Send Message</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-vote-yea"></i>
+                    <h2>BlockVote</h2>
+                </div>
+                <p>Decentralized Online Voting System Using Ethereum Smart Contracts</p>
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-info-circle"></i> About</a>
+                    <a href="#"><i class="fas fa-cogs"></i> How It Works</a>
+                    <a href="#"><i class="fas fa-question-circle"></i> FAQ</a>
+                    <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+                    <a href="#"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
+                </div>
+                <p class="copyright">&copy; 2025 BlockVote. All rights reserved. | Department of Computer Science and Engineering</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Operation completed successfully!</span>
+    </div>
+
+    <script>
+        // Page Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all links
+                document.querySelectorAll('.nav-link').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                // Hide all pages
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                // Show selected page
+                const pageId = this.getAttribute('data-page');
+                document.getElementById(pageId).classList.add('active');
+            });
+        });
+        
+        // Admin Tab Navigation
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                document.querySelectorAll('.admin-tab').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Hide all admin content
+                document.querySelectorAll('.admin-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Show selected content
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+        
+        // Voting functionality
+        document.querySelectorAll('.candidate-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove selected class from all candidates
+                document.querySelectorAll('.candidate-item').forEach(candidate => {
+                    candidate.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked candidate
+                this.classList.add('selected');
+            });
+        });
+        
+        // Clear selection
+        document.getElementById('clearSelection').addEventListener('click', function() {
+            document.querySelectorAll('.candidate-item').forEach(candidate => {
+                candidate.classList.remove('selected');
+            });
+            showToast('Selection cleared');
+        });
+        
+        // Submit vote
+        document.getElementById('submitVote').addEventListener('click', function() {
+            const selectedCandidate = document.querySelector('.candidate-item.selected');
+            
+            if (!selectedCandidate) {
+                showToast('Please select a candidate before submitting your vote.', 'error');
+                return;
+            }
+            
+            const candidateName = selectedCandidate.querySelector('h4').textContent;
+            const confirmVote = confirm(`You are about to vote for ${candidateName}. This action cannot be undone. Confirm your vote?`);
+            
+            if (confirmVote) {
+                // Simulate blockchain transaction
+                showToast('Your vote has been successfully recorded on the blockchain!');
+                
+                // Redirect to home page after a delay
+                setTimeout(() => {
+                    document.querySelectorAll('.nav-link').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    document.querySelector('[data-page="home"]').classList.add('active');
+                    
+                    document.querySelectorAll('.page').forEach(page => {
+                        page.classList.remove('active');
+                    });
+                    document.getElementById('home').classList.add('active');
+                }, 2000);
+            }
+        });
+        
+        // Connect wallet simulation
+        document.getElementById('connectWallet').addEventListener('click', function() {
+            // Simulate wallet connection
+            document.getElementById('userAvatar').textContent = 'DV';
+            
+            showToast('Wallet connected successfully!');
+        });
+        
+        // Verify student
+        document.getElementById('verifyStudent').addEventListener('click', function() {
+            const studentId = document.getElementById('studentId').value;
+            const fullName = document.getElementById('fullName').value;
+            const department = document.getElementById('department').value;
+            const year = document.getElementById('year').value;
+            
+            if (!studentId || !fullName || !department || !year) {
+                showToast('Please fill all the fields', 'error');
+                return;
+            }
+            
+            // Simulate verification process
+            showToast('Verification successful! You can now vote.');
+            
+            // Redirect to voting page after a delay
+            setTimeout(() => {
+                document.querySelectorAll('.nav-link').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelector('[data-page="voting"]').classList.add('active');
+                
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                document.getElementById('voting').classList.add('active');
+            }, 2000);
+        });
+        
+        // Add candidate in admin panel
+        document.getElementById('addCandidate').addEventListener('click', function() {
+            const name = document.getElementById('candidateName').value;
+            const department = document.getElementById('candidateDepartment').value;
+            const description = document.getElementById('candidateDescription').value;
+            
+            if (!name || !department || !description) {
+                showToast('Please fill all candidate fields', 'error');
+                return;
+            }
+            
+            const candidateList = document.getElementById('candidateList');
+            const candidateItem = document.createElement('div');
+            candidateItem.className = 'candidate-list-item';
+            candidateItem.innerHTML = `
+                <div>
+                    <h4>${name}</h4>
+                    <p>${department}</p>
+                </div>
+                <button class="btn btn-danger btn-sm remove-candidate"><i class="fas fa-trash"></i> Remove</button>
+            `;
+            
+            candidateList.appendChild(candidateItem);
+            
+            // Clear input fields
+            document.getElementById('candidateName').value = '';
+            document.getElementById('candidateDepartment').value = '';
+            document.getElementById('candidateDescription').value = '';
+            
+            // Add event listener to remove button
+            candidateItem.querySelector('.remove-candidate').addEventListener('click', function() {
+                candidateItem.remove();
+                showToast('Candidate removed');
+            });
+            
+            showToast('Candidate added successfully');
+        });
+        
+        // Create election
+        document.getElementById('createElection').addEventListener('click', function() {
+            const title = document.getElementById('electionTitle').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const description = document.getElementById('electionDescription').value;
+            
+            if (!title || !startDate || !endDate || !description) {
+                showToast('Please fill all election fields', 'error');
+                return;
+            }
+            
+            // Check if at least one candidate is added
+            if (document.querySelectorAll('#candidateList .candidate-list-item').length === 0) {
+                showToast('Please add at least one candidate', 'error');
+                return;
+            }
+            
+            // Simulate election creation
+            showToast('Election created successfully!');
+            
+            // Clear form
+            document.getElementById('electionTitle').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            document.getElementById('electionDescription').value = '';
+            document.getElementById('candidateList').innerHTML = '';
+        });
+        
+        // Add voter
+        document.getElementById('addVoter').addEventListener('click', function() {
+            const studentId = document.getElementById('voterStudentId').value;
+            const name = document.getElementById('voterName').value;
+            const department = document.getElementById('voterDepartment').value;
+            const year = document.getElementById('voterYear').value;
+            
+            if (!studentId || !name || !department || !year) {
+                showToast('Please fill all voter fields', 'error');
+                return;
+            }
+            
+            // Simulate voter addition
+            showToast('Voter added successfully!');
+            
+            // Clear form
+            document.getElementById('voterStudentId').value = '';
+            document.getElementById('voterName').value = '';
+            document.getElementById('voterDepartment').value = '';
+            document.getElementById('voterYear').value = '';
+        });
+        
+        // Send feedback
+        document.getElementById('sendFeedback').addEventListener('click', function() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('contactEmail').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+            
+            if (!name || !email || !subject || !message) {
+                showToast('Please fill all the fields', 'error');
+                return;
+            }
+            
+            // Simulate sending feedback
+            showToast('Thank you for your feedback! We will get back to you soon.');
+            
+            // Clear form
+            document.getElementById('name').value = '';
+            document.getElementById('contactEmail').value = '';
+            document.getElementById('subject').value = '';
+            document.getElementById('message').value = '';
+        });
+        
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.className = 'toast';
+            
+            if (type === 'error') {
+                toast.classList.add('error');
+            } else if (type === 'warning') {
+                toast.classList.add('warning');
+            }
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

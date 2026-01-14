@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Build
+build/
+dist/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+*.tmp
+*.log
+
+# Project specific
+voting-ui/node_modules/
+voting-ui/build/
